@@ -1,0 +1,25 @@
+{
+  "name": "eight-trigrams-screensaver",
+  "version": "1.0.0",
+  "description": "Màn hình chờ Trận pháp Bát Quái 3D (Dynamic Luopan / Eight Trigrams Screensaver)",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "web": "python -m http.server 8080",
+    "test-syntax": "node -c js/bagua-data.js && node -c js/bagua-textures.js && node -c js/particles.js && node -c js/code-background.js && node -c js/app.js && node -c electron/main.js"
+  },
+  "keywords": [
+    "screensaver",
+    "bagua",
+    "luopan",
+    "threejs",
+    "canvas",
+    "electron"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^34.0.0"
+  }
+}
+

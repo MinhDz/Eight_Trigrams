@@ -1,0 +1,421 @@
+/**
+ * style.css
+ * Phong cách Cổ Phong Huyền Ảo kết hợp Công Nghệ Hiện Đại (Cyber-Daoism)
+ * Hỗ trợ Đa Lớp Nền: Ảnh Nền Tùy Chỉnh, Mã Scripts Chạy Đáy, Three.js 3D WebGL
+ * Banner Khởi Nguyên Trận Pháp: Thái Cực sinh Lưỡng Nghi...
+ */
+
+:root {
+  --primary-color: #00f0ff;
+  --secondary-color: #0088ff;
+  --accent-color: #80ffff;
+  --glow-color: rgba(0, 240, 255, 0.65);
+  --bg-dark: #020408;
+  --font-dao: "Noto Serif SC", "STKaiti", "Kaiti", "SimSun", "Songti SC", serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #fff;
+}
+
+body.screensaver-active {
+  cursor: none !important;
+}
+
+/* 1. Lớp Ảnh Nền Tùy Chọn Dưới Cùng (Layer 0) */
+#bg-image-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: none;
+  filter: brightness(0.45) contrast(1.1);
+}
+
+/* 2. Lớp Canvas Mã Scripts Chạy Nền (Layer 1) */
+#bg-code-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 3. Lớp Canvas Three.js WebGL Bát Quái 3D (Layer 2) */
+#canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  background: radial-gradient(circle at center, rgba(7, 21, 38, 0.4) 0%, rgba(3, 8, 17, 0.75) 60%, rgba(1, 2, 4, 0.95) 100%);
+}
+
+/* 4. Banner Khởi Nguyên Trận Pháp (Intro Calligraphy Overlay) */
+#intro-banner {
+  position: absolute;
+  top: 6.5%; /* Dịch lên cao để không che phần Âm Dương và Bát Quái ở tâm */
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 15;
+  pointer-events: none;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#intro-banner.active {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1.02);
+}
+
+#intro-chinese {
+  font-family: var(--font-dao);
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 14px;
+  color: var(--accent-color);
+  text-shadow: 0 0 25px var(--glow-color), 0 0 50px var(--primary-color);
+  margin-bottom: 4px;
+}
+
+#intro-vietnamese {
+  font-family: var(--font-dao);
+  font-size: 1.15rem;
+  letter-spacing: 4px;
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* Nút Bỏ Qua Intro */
+#btn-skip-intro {
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  z-index: 25;
+  background: rgba(0, 240, 255, 0.15);
+  border: 1px solid var(--primary-color);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  backdrop-filter: blur(8px);
+  display: none;
+  transition: all 0.3s;
+}
+
+#btn-skip-intro:hover {
+  background: var(--primary-color);
+  color: #000;
+  box-shadow: 0 0 15px var(--glow-color);
+}
+
+/* Đồng hồ thời gian thực phong thủy */
+#clock-display {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  z-index: 10;
+  pointer-events: none;
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  text-shadow: 0 0 15px var(--glow-color);
+}
+
+#clock-time {
+  font-size: 3.2rem;
+  font-weight: 200;
+  letter-spacing: 4px;
+  color: #ffffff;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+#clock-date {
+  font-size: 1rem;
+  color: var(--accent-color);
+  letter-spacing: 1px;
+  margin-top: 4px;
+  opacity: 0.85;
+}
+
+#clock-branch {
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  margin-top: 2px;
+  font-family: var(--font-dao);
+  letter-spacing: 2px;
+}
+
+#clock-display.idle-clock-grow {
+  opacity: 0.45;
+  transform: scale(0.95);
+}
+
+/* Bảng điều khiển HUD tinh chỉnh (Control Panel) */
+#controls-panel {
+  position: absolute;
+  bottom: 25px;
+  right: 30px;
+  z-index: 20;
+  background: rgba(8, 16, 28, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 14px;
+  padding: 16px 20px;
+  width: 340px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 240, 255, 0.1);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+#controls-panel::-webkit-scrollbar {
+  width: 5px;
+}
+#controls-panel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+#controls-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.3);
+  border-radius: 3px;
+}
+#controls-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+#controls-panel.idle-fade {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(15px);
+}
+
+#controls-panel.ui-hidden {
+  display: none;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 8px var(--glow-color);
+  font-family: var(--font-dao);
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 12px 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-label::before {
+  content: '◈';
+  font-size: 0.7rem;
+}
+
+.control-group {
+  margin-bottom: 11px;
+}
+
+.control-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #a0c0e0;
+  margin-bottom: 5px;
+  letter-spacing: 0.5px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #c0d8f0;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  accent-color: var(--primary-color);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+select, input[type="range"], button {
+  outline: none;
+}
+
+select {
+  width: 100%;
+  padding: 7px 10px;
+  background: rgba(2, 8, 16, 0.85);
+  color: #fff;
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+select:hover {
+  border-color: var(--primary-color);
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  box-shadow: 0 0 8px var(--primary-color);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+.bg-upload-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.file-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.file-input-wrapper input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.btn-cyber {
+  flex: 1;
+  padding: 7px 10px;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--primary-color);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.btn-cyber:hover {
+  background: var(--primary-color);
+  color: #000;
+  box-shadow: 0 0 12px var(--glow-color);
+}
+
+.btn-danger {
+  border-color: #ff4455;
+  color: #ff8899;
+  background: rgba(255, 68, 85, 0.1);
+}
+
+.btn-danger:hover {
+  background: #ff4455;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(255, 68, 85, 0.6);
+}
+
+.btn-gold {
+  border-color: #ffcc33;
+  color: #ffe680;
+  background: rgba(255, 204, 51, 0.12);
+}
+
+.btn-gold:hover {
+  background: #ffcc33;
+  color: #000;
+  box-shadow: 0 0 15px rgba(255, 204, 51, 0.7);
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.shortcuts-hint {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.7rem;
+  color: #7090b0;
+  line-height: 1.5;
+}
+
+.shortcuts-hint kbd {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 4px;
+  border-radius: 4px;
+  color: var(--accent-color);
+  font-family: monospace;
+}

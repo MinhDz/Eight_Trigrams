@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Càn Khôn Bát Quái 3D - Dynamic Luopan Screensaver</title>
+  
+  <!-- Phông chữ Thư pháp & Cổ phong -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Lớp 0: Ảnh nền tùy chọn từ người dùng -->
+  <div id="bg-image-layer"></div>
+
+  <!-- Lớp 1: Mã Scripts/GLSL chạy mờ ảo dưới đáy -->
+  <canvas id="bg-code-canvas"></canvas>
+
+  <!-- Lớp 2: Container chứa Canvas Three.js WebGL Bát Quái 3D -->
+  <div id="canvas-container"></div>
+
+  <!-- Lớp Banner Khởi Nguyên Trận Pháp (Thái Cực sinh Lưỡng Nghi...) -->
+  <div id="intro-banner">
+    <div id="intro-chinese">太極生兩儀</div>
+    <div id="intro-vietnamese"></div>
+  </div>
+  <button id="btn-skip-intro">Bỏ qua ❯❯</button>
+
+  <!-- Đồng hồ phong thủy thời gian thực -->
+  <div id="clock-display">
+    <div id="clock-time">00:00:00</div>
+    <div id="clock-date">Đang tải...</div>
+    <div id="clock-branch">Giờ: Tý (23h-1h)</div>
+  </div>
+
+  <!-- Bảng điều khiển tùy biến HUD (Tự động ẩn sau 3 giây không chạm) -->
+  <div id="controls-panel">
+    <div class="panel-header">
+      <span class="panel-title">☯ CÀN KHÔN TRẬN PHÁP</span>
+    </div>
+
+    <!-- Nút Tái Hiện Phân Cảnh Mở Đầu -->
+    <div class="control-group">
+      <button class="btn-cyber btn-gold" id="btn-replay-intro" style="width: 100%; font-weight: 600;">⚡ Khởi Nguyên Trận Pháp (Phím R)</button>
+    </div>
+
+    <!-- PHẦN 1: HỆ TRẬN PHÁP & TRÌNH DIỄN -->
+    <div class="section-label">Hệ Trận Pháp & Thời Gian</div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Hệ Đồ Hình Vũ Trụ</span>
+      </div>
+      <select id="system-select">
+        <option value="wuxing">🌟 Hỗn Độn Ngũ Hành Tinh Đồ (Nhật Nguyệt · Ngũ Hành)</option>
+        <option value="bagua">☯ Càn Khôn Bát Quái Cổ Đồ (Thái Cực · Bát Quái)</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <div class="control-label">
+        <span>Chế Độ Chuyển Đổi</span>
+      </div>
+      <select id="sequence-select">
+        <option value="sequential">⏳ Tuần tự (Phẳng ⟷ Quỹ Đạo 3D)</option>
+        <option value="random">🎲 Ngẫu nhiên theo thời gian</option>
+        <option value="fixed-atomic">⚛ Cố định: 3D Quỹ Đạo</option>
+        <option value="fixed-planar">☯ Cố định: Chiếu Phẳng 2D</option>
+        <option value="custom">🛠 Tùy chỉnh góc đan chéo</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Thời Gian Chu Kỳ</span>
+        <span id="interval-value">12s</span>
+      </div>
+      <input type="range" id="interval-slider" min="5" max="60" step="1" value="12">
+    </div>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="chk-auto-zoom" checked>
+      <span>Tự động Thu Phóng (Cinematic Zoom)</span>
+    </label>
+
+    <!-- PHẦN 2: TƯƠNG TÁC & QUỸ ĐẠO -->
+    <div class="section-label">Tương Tác & Quỹ Đạo</div>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="chk-mouse-tracking" checked>
+      <span>Xoay nghiêng theo con chuột (Phím T)</span>
+    </label>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="chk-wheel-zoom" checked>
+      <span>Thu phóng bằng cuộn chuột</span>
+    </label>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Độ Đan Chéo Quỹ Đạo</span>
+        <span id="spread-value">100%</span>
+      </div>
+      <input type="range" id="spread-slider" min="0.0" max="1.0" step="0.01" value="1.0">
+    </div>
+
+    <!-- PHẦN 3: NỀN & MÃ SCRIPTS -->
+    <div class="section-label">Hình Nền & Mã Chạy Đáy</div>
+
+    <label class="checkbox-label">
+      <input type="checkbox" id="chk-code-bg" checked>
+      <span>Mã Scripts chạy lướt dưới nền</span>
+    </label>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Độ rõ nét mã scripts</span>
+      </div>
+      <input type="range" id="code-opacity-slider" min="0.1" max="0.85" step="0.05" value="0.42">
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Ảnh Nền Tùy Chọn</span>
+      </div>
+      <div class="bg-upload-row">
+        <div class="file-input-wrapper">
+          <button class="btn-cyber" type="button">📁 Tải ảnh nền...</button>
+          <input type="file" id="bg-file-input" accept="image/*">
+        </div>
+        <button class="btn-cyber btn-danger" id="btn-clear-bg" style="display: none;" type="button">✖ Xóa</button>
+      </div>
+    </div>
+
+    <!-- PHẦN 4: SẮC MÀU & TỐC ĐỘ -->
+    <div class="section-label">Sắc Màu & Tốc Độ</div>
+
+    <div class="control-group">
+      <select id="theme-select">
+        <option value="celestial">Thiên Sư Tinh Đồ (Celestial Gold)</option>
+        <option value="cyan">Thanh Long Hàn Băng (Cyan Cyber)</option>
+        <option value="gold">Hoàng Kim Đế Vương (Imperial Gold)</option>
+        <option value="emerald">Bích Ngọc U Linh (Mystic Jade)</option>
+        <option value="crimson">Huyết Chu Sa (Crimson Rune)</option>
+        <option value="silver">Bạch Ngân Hàn Sương (Silver Star)</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Tốc Độ Xoay Đĩa</span>
+        <span id="speed-value">1.0x</span>
+      </div>
+      <input type="range" id="speed-slider" min="0.2" max="3.0" step="0.1" value="1.0">
+    </div>
+
+    <!-- Nút Thao Tác Nhanh -->
+    <div class="button-row">
+      <button class="btn-cyber" id="btn-pause">⏸ Tạm dừng</button>
+      <button class="btn-cyber" id="btn-fullscreen">⛶ Toàn màn hình</button>
+    </div>
+
+    <!-- Phím tắt gợi ý -->
+    <div class="shortcuts-hint">
+      <kbd>R</kbd> Tái hiện Khởi Nguyên &nbsp;|&nbsp; <kbd>T</kbd> Bật/Tắt chuột<br>
+      <kbd>M</kbd> Đổi chu kỳ &nbsp;|&nbsp; <kbd>C</kbd> Đổi màu &nbsp;|&nbsp; <kbd>F</kbd> Toàn màn hình<br>
+      <kbd>Space</kbd> Bỏ qua / Dừng &nbsp;|&nbsp; <kbd>H</kbd> Ẩn HUD
+    </div>
+  </div>
+
+  <!-- Nạp các thư viện và mã nguồn logic -->
+  <script src="js/libs/three.min.js"></script>
+  <script src="js/bagua-data.js"></script>
+  <script src="js/bagua-textures.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/code-background.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
